@@ -1,0 +1,64 @@
+#TESTBENCH CODE
+module single_port_ram_tb;
+  reg [7:0] data_in;
+  reg[5:0]  addr_reg;
+  reg we;
+  reg clk;
+  wire [7:0] q;
+  
+  single_port_ram uut( data_in,addr_reg,we, clk,q);
+  initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars( 1, single_port_ram_tb);
+  end
+  initial begin
+    clk= 1'b1;
+    forever #5 clk=~clk ;
+  end
+  initial begin
+    data_in = 8'h01;
+    addr_reg= 6'd0;
+    we = 1'b1;
+    #10;
+    data_in=  8'h02;
+    addr_reg = 6'd1;
+    we= 1'b1;
+    #10;
+    data_in = 8'h02;
+    addr_reg = 6'd1;
+    #10;
+    addr_reg = 6'd1;
+    we = 1'b0;
+    #10;
+    data_in = 8'h04;
+    addr_reg= 6'd3;
+    #10;
+    addr_reg= 6'd3;
+    data_in = 8'h03;
+    we=1'b1;
+    #10;
+    addr_reg = 6'd4;
+    #10;
+    $finish;
+  end
+endmodule
+
+# DESIGN CODE
+// Code your design here
+module single_port_ram(
+  input [7:0] data_in,
+  input [5:0] addr_reg,
+  input we,
+  input clk,
+  output reg [7:0] q
+);
+  reg [7:0] ram [63:0]; 
+
+  always @(posedge clk) begin
+    if (we) begin
+      ram[addr_reg] <= data_in; 
+    end else begin 
+      q <= ram[addr_reg];      
+    end
+  end
+endmodule
